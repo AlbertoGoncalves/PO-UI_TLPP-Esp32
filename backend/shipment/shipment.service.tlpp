@@ -1,0 +1,117 @@
+#include "tlpp-core.th"
+
+namespace shipment
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ShipmentService
+	Manipula os dados de tutores
+	@type		class
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Class ShipmentService
+    Public Data jResponse as Json
+
+    Public method new() as Object
+    Public method get() as Json
+    Public method post() as Json
+    Public method put() as Json
+    Public method delete() as Json
+EndClass
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ShipmentServices:new()
+	Obtém uma nova instância da classe ShipmentService
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Method new() as Object Class ShipmentService
+    ::jResponse := JsonObject():New()
+Return Self
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ShipmentService:get()
+	Retorna os dados de tutores
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Method get(nPage as Numeric, nPageSize as Numeric, cFilter as Character,;
+    cFields as Character, cSort as Character, cShipmentCode as Character) as Json Class ShipmentService
+    Local oData as Object
+
+    oData := ShipmentData():new("GET")
+    oData:get(nPage, nPageSize, cFilter, cFields, cSort, cShipmentCode)
+
+    If oData:lOk
+        ::jResponse := oData:gtJsonObjResponse()
+        If !Empty(cShipmentCode) .And. Len(::jResponse['items']) > 0
+            ::jResponse := ::jResponse['items'][1]
+        EndIf
+    Else
+        ::jResponse := SetRestFault(oData:GetCode(), oData:GetMessage())
+    EndIf
+Return ::jResponse
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ShipmentService:post()
+	Inclui um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		28/09/2022
+/*/
+//------------------------------------------------------------------------------
+Method post(nOperation as Numeric, jBody as Json) as Json Class ShipmentService
+    Local oData as Object
+
+    oData := ShipmentData():new("POST")
+    ::jResponse := oData:handleShipment(nOperation, jBody)
+
+    If !oData:lOk
+        ::jResponse := SetRestFault(oData:GetCode(), oData:GetMessage())
+    EndIf
+Return ::jResponse
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ShipmentService:put()
+	Altera um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		28/09/2022
+/*/
+//------------------------------------------------------------------------------
+Method put(nOperation as Numeric, jBody as Json, cShipmentCode as Character) as Json Class ShipmentService
+    Local oData as Object
+
+    oData := ShipmentData():new("PUT")
+    ::jResponse := oData:handleShipment(nOperation, jBody, cShipmentCode)
+
+    If !oData:lOk
+        ::jResponse := SetRestFault(oData:GetCode(), oData:GetMessage())
+    EndIf
+Return ::jResponse
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ShipmentService:delete()
+	Exclui um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		28/09/2022
+/*/
+//------------------------------------------------------------------------------
+Method delete(nOperation as Numeric, cShipmentCode as Character) as Json Class ShipmentService
+    Local oData as Object
+
+    oData := ShipmentData():new("DELETE")
+    oData:handleShipment(nOperation,, cShipmentCode)
+
+    If oData:lOk
+        ::jResponse := oData:GetJsonObject()
+    Else
+        ::jResponse := SetRestFault(oData:GetCode(), oData:GetMessage())
+    EndIf
+Return ::jResponse

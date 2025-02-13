@@ -1,0 +1,117 @@
+#include "tlpp-core.th"
+
+namespace package
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} PackageService
+	Manipula os dados de tutores
+	@type		class
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Class PackageService
+    Public Data jResponse as Json
+
+    Public method new() as Object
+    Public method get() as Json
+    Public method post() as Json
+    Public method put() as Json
+    Public method delete() as Json
+EndClass
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} PackageServices:new()
+	Obtém uma nova instância da classe PackageService
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Method new() as Object Class PackageService
+    ::jResponse := JsonObject():New()
+Return Self
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} PackageService:get()
+	Retorna os dados de tutores
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Method get(nPage as Numeric, nPageSize as Numeric, cFilter as Character,;
+    cFields as Character, cSort as Character, cPackageCode as Character) as Json Class PackageService
+    Local oData as Object
+
+    oData := PackageData():new("GET")
+    oData:get(nPage, nPageSize, cFilter, cFields, cSort, cPackageCode)
+
+    If oData:lOk
+        ::jResponse := oData:gtJsonObjResponse()
+        If !Empty(cPackageCode) .And. Len(::jResponse['items']) > 0
+            ::jResponse := ::jResponse['items'][1]
+        EndIf
+    Else
+        ::jResponse := SetRestFault(oData:GetCode(), oData:GetMessage())
+    EndIf
+Return ::jResponse
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} PackageService:post()
+	Inclui um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		28/09/2022
+/*/
+//------------------------------------------------------------------------------
+Method post(nOperation as Numeric, jBody as Json) as Json Class PackageService
+    Local oData as Object
+
+    oData := PackageData():new("POST")
+    ::jResponse := oData:handlePackage(nOperation, jBody)
+
+    If !oData:lOk
+        ::jResponse := SetRestFault(oData:GetCode(), oData:GetMessage())
+    EndIf
+Return ::jResponse
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} PackageService:put()
+	Altera um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		28/09/2022
+/*/
+//------------------------------------------------------------------------------
+Method put(nOperation as Numeric, jBody as Json, cPackageCode as Character) as Json Class PackageService
+    Local oData as Object
+
+    oData := PackageData():new("PUT")
+    ::jResponse := oData:handlePackage(nOperation, jBody, cPackageCode)
+
+    If !oData:lOk
+        ::jResponse := SetRestFault(oData:GetCode(), oData:GetMessage())
+    EndIf
+Return ::jResponse
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} PackageService:delete()
+	Exclui um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		28/09/2022
+/*/
+//------------------------------------------------------------------------------
+Method delete(nOperation as Numeric, cPackageCode as Character) as Json Class PackageService
+    Local oData as Object
+
+    oData := PackageData():new("DELETE")
+    oData:handlePackage(nOperation,, cPackageCode)
+
+    If oData:lOk
+        ::jResponse := oData:GetJsonObject()
+    Else
+        ::jResponse := SetRestFault(oData:GetCode(), oData:GetMessage())
+    EndIf
+Return ::jResponse

@@ -1,0 +1,27 @@
+{
+    "totvsLanguageServer.welcomePage": false,
+    "totvsLanguageServer.editor.linter.includes": "C:\\Dev\\Projetos\\Projets\\advpl\\include",
+    "4gl.formatter": {},
+    "totvsLanguageServer.folder.extensionsAllowed": [
+
+      ".PRW",
+      ".PRX",
+      ".PRG",
+      ".PPX",
+      ".PPP",
+      ".TLPP",
+      ".APW",
+      ".APH",
+      ".APL",
+      ".AHU",
+      ".TRES",
+      ".PNG",
+      ".BMP",
+      ".RES",
+      ".4GL",
+      ".PER",
+      ".JS",
+      ".app",
+      ".RPTDESIGN"
+    ]
+}

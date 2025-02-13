@@ -1,0 +1,201 @@
+#include "tlpp-core.th"
+#include "FWMVCDEF.CH"
+
+namespace package
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} PackageData
+	Manipula os dados de package
+	@type		class
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Class PackageData From FWAdapterBaseV2
+    Public Data oHashFields	as Object
+
+    Public method new() as Object
+    Public method get()
+    Public method handlePackage() as Logical
+    Public method setHashFields()
+EndClass
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} PackageData:new()
+	Obtém uma nova instância da classe PackageData
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Method new(cVerb as Character) as Object Class PackageData
+    _Super:new(cVerb, .T.)
+Return Self
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} PackageData::setHashFields
+    Define os campos utilizados na operação de Incluir e Alterar.
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		06/10/2022
+/*/
+//------------------------------------------------------------------------------
+METHOD setHashFields() CLASS PackageData
+	::oHashFields := tHashMap():new()
+
+	::oHashFields:Set("filial"  , "ZZ1_FILIAL")
+	::oHashFields:Set("code"    , "ZZ1_CODE"  )
+	::oHashFields:Set("status"  , "ZZ1_STATUS")
+	::oHashFields:Set("name"    , "ZZ1_NAME"  )
+	::oHashFields:Set("tipo"    , "ZZ1_TIPO"  )
+	::oHashFields:Set("tracker" , "ZZ1_CODRAS")
+	::oHashFields:Set("shipment", "ZZ1_CARREG")
+Return Nil
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} PackageData:get()
+	Retorna os dados de package
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Method get(nPage as Numeric, nPageSize as Numeric, cFilter as Character,;
+    cFields as Character, cSort as Character, cPackageCode as Character) Class PackageData
+    Local aArea as Array
+    Local cWhere as Character
+    Local aFilter as Array
+
+    aFilter := {}
+
+    If Empty(cPackageCode)
+        cWhere := "ZZ1_FILIAL = '" + FwxFilial("ZZ1") + "' AND D_E_L_E_T_ = ''"
+    Else
+        cWhere := "ZZ1_CODE = '" + cPackageCode + "' AND ZZ1_FILIAL = '" + FwxFilial("ZZ1") + "' AND D_E_L_E_T_ = ''"
+    EndIf
+
+    aArea   := FwGetArea()
+
+    AddMapFields(self)
+
+    If !Empty(cFilter)
+        aAdd(aFilter, {"filter", cFilter})
+        ::SetUrlFilter(aFilter)
+    EndIf
+
+    If !Empty(cFields)
+        ::SetFields(cFields)
+    EndIf
+
+    If !Empty(cSort)
+        ::SetOrderQuery(cSort)
+    EndIf
+
+    ::SetPage(nPage)
+    ::SetPageSize(nPageSize)
+    ::SetQuery(utils.u_getQuery('ZZ1'))
+    ::SetWhere(cWhere)
+    ::SetOrder("ZZ1_FILIAL, ZZ1_CODE")
+
+    If ::Execute()
+        ::FillGetResponse()
+    EndIf
+
+    RestArea( aArea )
+	aSize( aArea, 0 )
+Return Nil
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} PackageData:handlePackage()
+	Inclui, altera ou exclui um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Method handlePackage(nOperation as Numeric, jBody as Json, cPackageCode as Character) as Logical Class PackageData
+    Local oModel	as Object
+	Local oModelZZ1	as Object
+    Local lRet as Logical
+    Local aData as Array
+    
+    lRet := .T.
+    ::setHashFields()
+
+    If nOperation <> 5
+        aData := utils.u_buildData(jBody, self)
+	Endif
+
+    If nOperation <> 3
+        If !utils.u_searchRecord(cPackageCode, 'ZZ1')
+            lRet := .F.
+            Return SetResponse(lRet)
+        EndIf
+    EndIf
+
+    oModel := FWLoadModel("ZZ1B_MVC")
+    oModelZZ1 := oModel:GetModel("ZZ1MASTER")
+    utils.u_setOperationModel(oModel, nOperation)
+
+    oModel:Activate()
+    If oModel:IsActive()
+        If oModel:GetOperation() <> MODEL_OPERATION_DELETE
+            lRet := utils.u_setValue(aData, oModelZZ1, 'ZZ1')
+		Endif
+    Else
+        lRet := .F.        
+    EndIf
+
+    If !lRet .Or. !( oModel:VldData() .And. oModel:CommitData() )
+		lRet := .F.
+        SetRestFault(400, utils.u_getError(oModel:GetErrorMessage()))
+	Endif
+
+	oModel:DeActivate()
+	FreeObj(oModelZZ1)
+	FreeObj(oModel)
+Return SetResponse(lRet)
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} AddMapFields
+	Determina quais propriedades x campos do protheus serão apresentados
+	@type		function
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Static Function AddMapFields(oSelf as Object)
+    oSelf:AddMapFields("filial"  , "ZZ1_FILIAL", .T., .T., { "ZZ1_FILIAL", 'C', TamSX3('ZZ1_FILIAL')[1], 0 })
+    oSelf:AddMapFields("code"    , "ZZ1_CODE"  , .T., .T., { "ZZ1_CODE"  , 'C', TamSX3('ZZ1_CODE'  )[1], 0 })
+    oSelf:AddMapFields("status"  , "ZZ1_STATUS", .T., .T., { "ZZ1_STATUS", 'C', TamSX3('ZZ1_STATUS')[1], 0 })
+    oSelf:AddMapFields("name"    , "ZZ1_NAME"  , .T., .F., { "ZZ1_NAME"  , 'C', TamSX3('ZZ1_NAME'  )[1], 0 })
+    oSelf:AddMapFields("tipo"    , "ZZ1_TIPO"  , .T., .F., { "ZZ1_TIPO"  , 'C', TamSX3('ZZ1_TIPO'  )[1], 0 })
+    oSelf:AddMapFields("tracker" , "ZZ1_CODRAS", .T., .F., { "ZZ1_CODRAS", 'C', TamSX3('ZZ1_CODRAS')[1], 0 })
+    oSelf:AddMapFields("shipment", "ZZ1_CARREG", .T., .F., { "ZZ1_CARREG", 'C', TamSX3('ZZ1_CARREG')[1], 0 })
+    
+Return Nil
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} SetResponse
+	Monta objeto de resposta
+	@type		function
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Static Function SetResponse(lRet as Logical) as Json
+    Local jResponse as Json
+
+    If lRet
+        jResponse := JsonObject():New()
+
+        jResponse['filial'  ] := RTrim(ZZ1->ZZ1_FILIAL)
+        jResponse['code'    ]  := RTrim(ZZ1->ZZ1_CODE)
+        jResponse['status'  ]  := RTrim(ZZ1->ZZ1_STATUS)
+        jResponse['name'    ]  := FwHttpEncode(RTrim(ZZ1->ZZ1_NAME))
+        jResponse['tipo'    ] := RTrim(ZZ1->ZZ1_TIPO)
+        jResponse['tracker' ] := RTrim(ZZ1->ZZ1_CODRAS)
+        jResponse['shipment'] := RTrim(ZZ1->ZZ1_CARREG)
+        
+    EndIf
+Return jResponse

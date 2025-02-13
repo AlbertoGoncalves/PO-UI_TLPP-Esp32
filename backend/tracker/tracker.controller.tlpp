@@ -1,0 +1,164 @@
+#include 'tlpp-core.th'
+
+namespace tracker
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerController
+	API para Consultar, Incluir, Alterar e Excluir tracker
+	@type		class
+	@author		Alberto.Gonçalves
+	@since 		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Class TrackerController
+	Data jResponse  as Json
+	Data oService   as Object
+
+	Public Method new() as Object
+
+	@Get("/api/v1/tracker")
+	Public Method get() as Logical
+
+	@Get("/api/v1/tracker/:code")
+	Public Method getByCode() as Logical
+
+	@Post("/api/v1/tracker")
+	Public Method post() as Logical
+
+	@Put("/api/v1/tracker/:code")
+	Public Method put() as Logical
+
+	@Delete("/api/v1/tracker/:code")
+	Public Method delete() as Logical
+EndClass
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerController:new() as Object
+	Obtem uma nova instância da classe TrackerController
+	@type 		method
+	@author		Alberto.Gonçalves
+	@since 		20/10/2024
+	@return		object, uma nova instancia da classe TrackerController
+/*/
+//------------------------------------------------------------------------------
+Method new() as Object Class TrackerController
+	::oService  := TrackerService():new()
+	::jResponse := JsonObject():new()
+Return self
+
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerController:get() as Logical
+	Retornar todos os tutores
+	@type		method
+	@author		Alberto.Gonçalves
+	@since 		20/10/2024
+	@return		logical, Verdadeiro
+/*/
+//------------------------------------------------------------------------------
+Method get() as Logical Class TrackerController
+	Local cFields as Character
+	Local cSort as Character
+	Local cFilter as Character
+	Local nPage as Numeric
+	Local nPageSize as Numeric
+
+	cFields := utils.u_getQueryParam('FIELDS')
+	cSort := utils.u_getQueryParam('SORT')
+	cFilter := utils.u_getQueryParam('filter')
+	nPage := utils.u_getQueryParam('page')
+	nPageSize := utils.u_getQueryParam('pageSize')
+
+    oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+	oRest:setResponse(::oService:get(Val(nPage), Val(nPageSize), cFilter, cFields, cSort))
+Return .T.
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerController:getByCode() as Logical
+	Retornar um tutor pelo seu code
+	@type		method
+	@author		Alberto.Gonçalves
+	@since 		06/10/2022
+	@return		logical, Verdadeiro
+/*/
+//------------------------------------------------------------------------------
+Method getByCode() as Logical Class TrackerController
+	Local cCode as Character
+	Local cFields as Character
+
+	cFields := utils.u_getQueryParam('FIELDS')
+
+	oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+	cCode := oRest:getPathParamsRequest()['code']
+	oRest:setResponse(::oService:get(1, 10, /* cFilter */, cFields, /* cSort */, cCode))
+Return .T.
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerController:post() as Logical
+	Inclui um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since 		20/10/2024
+	@return		logical, Verdadeiro
+/*/
+//------------------------------------------------------------------------------
+Method post() as Logical Class TrackerController
+	Local cBody as Character
+	Local jBody as Json
+
+	oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+
+	cBody := oRest:getBodyRequest()
+	jBody := JsonObject():New()
+
+	If jBody:FromJson(cBody) == Nil
+		oRest:setResponse(::oService:post(3, jBody))
+	Else
+		setRestFault(400, "Json inválcodeo")
+	EndIf
+Return .T.
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerController:put() as Logical
+	Altera um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since 		20/10/2024
+	@return		logical, Verdadeiro
+/*/
+//------------------------------------------------------------------------------
+Method put() as Logical Class TrackerController
+	Local cBody as Character
+	Local jBody as Json
+	Local cCode as Character
+
+	oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+
+	cCode := oRest:getPathParamsRequest()['code']
+	cBody := oRest:getBodyRequest()
+	jBody := JsonObject():New()
+
+	If jBody:FromJson(cBody) == Nil
+		oRest:setResponse(::oService:put(4, jBody, cCode))
+	Else
+		setRestFault(400, "Json inválcodeo")
+	EndIf
+Return .T.
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerController:delete() as Logical
+	Exclui um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since 		20/10/2024
+	@return		logical, Verdadeiro
+/*/
+//------------------------------------------------------------------------------
+Method delete() as Logical Class TrackerController
+	Local cCode as Character
+
+	oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+
+	cCode := oRest:getPathParamsRequest()['code']
+	oRest:setResponse(::oService:delete(5, cCode))
+Return .T.

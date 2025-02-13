@@ -1,0 +1,78 @@
+<po-page-default [p-title]="ptitle" [p-breadcrumb]="breadcrumb">
+  <div class="po-row">
+    <!-- <po-widget class="po-md-6 po-lg-4 po-mb-2" p-title="Carregamentos">
+      <div class="po-font-subtitle po-text-center">{{ totalShipments.toString() }}</div>
+      <div class="po-text-center sample-widget-text-subtitle"></div>
+      <po-chart [p-series]="[
+        { label: 'Pendente', data: 100 },
+        { label: 'Carregando', data: 10 },
+        { label: 'Expedido', data: 10 }
+      ]">
+      </po-chart>
+    </po-widget> -->
+
+    <!-- <po-widget class="po-md-6 po-lg-4 po-mb-2" p-title="Total de itens Pendentes">
+      <div class="po-font-subtitle po-text-center">{{ totalPackages.toString() }}
+      </div>
+      <div class="po-text-center sample-widget-text-subtitle"></div>
+      <po-chart [p-series]="[
+      { label: 'Pendente', data: 100 },
+      { label: 'Carregando', data: 10 },
+      { label: 'Expedido', data: 10 }
+    ]">
+      </po-chart>
+    </po-widget> -->
+
+  </div>
+
+  <!-- <po-divider></po-divider> -->
+
+  <!-- <div class="po-mb-1" *ngIf="shipments.items.length > 0">
+    <po-tag [p-value]="textRemainingRecords"></po-tag>
+  </div> -->
+  <po-container>
+    <po-divider p-border-width="medium" p-label="Sequencia de carregamento"></po-divider>
+    <div class="po-row">
+      <po-input class="po-xl-6 po-lg-6 po-md-6 po-sm-12 po-mb-sm-2"
+      p-label="Pacote"
+      p-clean="true"
+      p-required="true"
+      [(ngModel)]="codRead"
+      p-placeholder="Realizar leitura do codigo de barras" p-disabled="false">
+      </po-input>
+      <po-button p-label="Enviar" (p-click)="saveputpackages(codRead)"> </po-button>
+    </div>
+  </po-container>
+
+  <po-container *ngIf="oPackage.code">
+    <po-divider p-border-width="medium" p-label="Proximo Pacote a Expedir"></po-divider>
+    <po-list-view
+    [p-items]="[oPackage]"
+    >
+      <ng-template p-list-view-content-template let-item>
+        <div class="po-row">
+          <po-info class="po-md-6 po-lg-3" p-label="Codigo" [p-value]="oPackage.code"></po-info>
+          <po-info class="po-md-6 po-lg-3" p-label="Pacote" [p-value]="oPackage.name"></po-info>
+          <po-info class="po-md-6 po-lg-3" p-label="Tipo" [p-value]="oPackage.tipo"></po-info>
+        </div>
+      </ng-template>
+    </po-list-view>
+  </po-container>
+
+
+  <po-container *ngIf="packages.items.length > 0">
+    <po-divider p-border-width="medium" p-label="Pacotes Pendentes"></po-divider>
+    <po-list-view
+    [p-items]="packages.items"
+    (p-show-more)="showMore()"
+    >
+      <ng-template p-list-view-content-template let-item>
+        <div class="po-row">
+          <po-info class="po-md-6 po-lg-3" p-label="Codigo" [p-value]="item.code"></po-info>
+          <po-info class="po-md-6 po-lg-3" p-label="Pacote" [p-value]="item.name"></po-info>
+          <po-info class="po-md-6 po-lg-3" p-label="Tipo" [p-value]="item.tipo"></po-info>
+        </div>
+      </ng-template>
+    </po-list-view>
+  </po-container>
+</po-page-default>

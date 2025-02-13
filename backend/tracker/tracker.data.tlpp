@@ -1,0 +1,195 @@
+#include "tlpp-core.th"
+#include "FWMVCDEF.CH"
+
+namespace tracker
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerData
+	Manipula os dados de tracker
+	@type		class
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Class TrackerData From FWAdapterBaseV2
+    Public Data oHashFields	as Object
+
+    Public method new() as Object
+    Public method get()
+    Public method handleTracker() as Logical
+    Public method setHashFields()
+EndClass
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerData:new()
+	Obtém uma nova instância da classe TrackerData
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Method new(cVerb as Character) as Object Class TrackerData
+    _Super:new(cVerb, .T.)
+Return Self
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerData::setHashFields
+    Define os campos utilizados na operação de Incluir e Alterar.
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		06/10/2022
+/*/
+//------------------------------------------------------------------------------
+METHOD setHashFields() CLASS TrackerData
+	::oHashFields := tHashMap():new()
+
+	::oHashFields:Set("filial", "ZZ2_FILIAL")
+	::oHashFields:Set("code", "ZZ2_CODE")
+	::oHashFields:Set("name", "ZZ2_NAME")
+	::oHashFields:Set("status", "ZZ2_STATUS")
+	::oHashFields:Set("id", "ZZ2_ID")
+Return Nil
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerData:get()
+	Retorna os dados de tracker
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Method get(nPage as Numeric, nPageSize as Numeric, cFilter as Character,;
+    cFields as Character, cSort as Character, cTrackerCode as Character) Class TrackerData
+    Local aArea as Array
+    Local cWhere as Character
+    Local aFilter as Array
+
+    aFilter := {}
+
+    If Empty(cTrackerCode)
+        cWhere := "ZZ2_FILIAL = '" + FwxFilial("ZZ2") + "' AND D_E_L_E_T_ = ''"
+    Else
+        cWhere := "ZZ2_CODE = '" + cTrackerCode + "' AND ZZ2_FILIAL = '" + FwxFilial("ZZ2") + "' AND D_E_L_E_T_ = ''"
+    EndIf
+
+    aArea   := FwGetArea()
+
+    AddMapFields(self)
+
+    If !Empty(cFilter)
+        aAdd(aFilter, {"filter", cFilter})
+        ::SetUrlFilter(aFilter)
+    EndIf
+
+    If !Empty(cFields)
+        ::SetFields(cFields)
+    EndIf
+
+    If !Empty(cSort)
+        ::SetOrderQuery(cSort)
+    EndIf
+
+    ::SetPage(nPage)
+    ::SetPageSize(nPageSize)
+    ::SetQuery(utils.u_getQuery('ZZ2'))
+    ::SetWhere(cWhere)
+    ::SetOrder("ZZ2_FILIAL, ZZ2_CODE")
+
+    If ::Execute()
+        ::FillGetResponse()
+    EndIf
+
+    RestArea( aArea )
+	aSize( aArea, 0 )
+Return Nil
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerData:handleTracker()
+	Inclui, altera ou exclui um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Method handleTracker(nOperation as Numeric, jBody as Json, cTrackerCode as Character) as Logical Class TrackerData
+    Local oModel	as Object
+	Local oModelZZ2	as Object
+    Local lRet as Logical
+    Local aData as Array
+    
+    lRet := .T.
+    ::setHashFields()
+
+    If nOperation <> 5
+        aData := utils.u_buildData(jBody, self)
+	Endif
+
+    If nOperation <> 3
+        If !utils.u_searchRecord(cTrackerCode, 'ZZ2')
+            lRet := .F.
+            Return SetResponse(lRet)
+        EndIf
+    EndIf
+
+    oModel := FWLoadModel("ZZ2B_MVC")
+    oModelZZ2 := oModel:GetModel("ZZ2MASTER")
+    utils.u_setOperationModel(oModel, nOperation)
+
+    oModel:Activate()
+    If oModel:IsActive()
+        If oModel:GetOperation() <> MODEL_OPERATION_DELETE
+            lRet := utils.u_setValue(aData, oModelZZ2, 'ZZ2')
+		Endif
+    Else
+        lRet := .F.        
+    EndIf
+
+    If !lRet .Or. !( oModel:VldData() .And. oModel:CommitData() )
+		lRet := .F.
+        SetRestFault(400, utils.u_getError(oModel:GetErrorMessage()))
+	Endif
+
+	oModel:DeActivate()
+	FreeObj(oModelZZ2)
+	FreeObj(oModel)
+Return SetResponse(lRet)
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} AddMapFields
+	Determina quais propriedades x campos do protheus serão apresentados
+	@type		function
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Static Function AddMapFields(oSelf as Object)
+    oSelf:AddMapFields("filial", "ZZ2_FILIAL", .T., .T., { "ZZ2_FILIAL", 'C', TamSX3('ZZ2_FILIAL')[1] , 0 })
+    oSelf:AddMapFields("code", "ZZ2_CODE", .T., .T., { "ZZ2_CODE", 'C', TamSX3('ZZ2_CODE')[1] , 0 })
+    oSelf:AddMapFields("name", "ZZ2_NAME", .T., .F., { "ZZ2_NAME", 'C', TamSX3('ZZ2_NAME')[1] , 0 })
+    oSelf:AddMapFields("status", "ZZ2_STATUS", .T., .F., { "ZZ2_STATUS", 'C', TamSX3('ZZ2_STATUS')[1] , 0 })
+    oSelf:AddMapFields("id", "ZZ2_ID", .T., .F., { "ZZ2_ID", 'C', TamSX3('ZZ2_ID')[1] , 0 })
+    
+Return Nil
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} SetResponse
+	Monta objeto de resposta
+	@type		function
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Static Function SetResponse(lRet as Logical) as Json
+    Local jResponse as Json
+
+    If lRet
+        jResponse := JsonObject():New()
+
+        jResponse['filial'] := RTrim(ZZ2->ZZ2_FILIAL)
+        jResponse['code'] := RTrim(ZZ2->ZZ2_CODE)
+        jResponse['name'] := FwHttpEncode(RTrim(ZZ2->ZZ2_NAME))
+        jResponse['status'] := RTrim(ZZ2->ZZ2_STATUS)
+        jResponse['id'] := RTrim(ZZ2->ZZ2_ID)
+        
+    EndIf
+Return jResponse

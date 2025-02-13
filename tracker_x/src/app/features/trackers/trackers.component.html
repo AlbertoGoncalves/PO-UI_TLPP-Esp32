@@ -1,0 +1,31 @@
+<po-page-default p-title="Rastreadores" [p-actions]="actions" [p-breadcrumb]="breadcrumb">
+
+  <div class="po-mb-1" *ngIf="trackers.items.length > 0">
+    <po-tag [p-value]="textRemainingRecords"></po-tag>
+  </div>
+  <po-table [p-striped]="true"
+  [p-columns]="columns"
+  [p-items]="trackers.items"
+  [p-loading]="isLoading"
+  [p-show-more-disabled]="!hasNextPage"
+  (p-show-more)="showMore()"
+  [p-loading-show-more]="isLoading">
+    <ng-template p-table-column-template [p-property]="targetProperty" let-value>
+      <po-tag *ngIf="value === 'ALOCADO'"       [p-value]="value" p-icon="ph ph-info" p-color="yellow" p-text-color="black"> </po-tag>
+      <po-tag *ngIf="value === 'DISPONIVEL'"    [p-value]="value" p-icon="ph ph-info" p-color="green" p-text-color="white"> </po-tag>
+      <po-tag *ngIf="value === 'EM MANUTENÇÃO'" [p-value]="value" p-icon="ph ph-info" p-color="red" p-text-color="white"> </po-tag>
+      <po-tag *ngIf="value === 'DESCONTINUADO'" [p-value]="value" p-icon="ph ph-info" p-color="black" p-text-color="white"> </po-tag>
+    </ng-template>
+
+  </po-table>
+
+  <!-- <po-widget *ngFor="let tracker of trackers.items">
+    <span>{{tracker.id}} - {{tracker.name}}</span>
+  </po-widget> -->
+  <!-- <table border="1">
+    <tr *ngFor="let tracker of trackers.items">
+      <td>{{tracker.id}}</td>
+      <td>{{tracker.name}}</td>
+    </tr>
+  </table> -->
+</po-page-default>

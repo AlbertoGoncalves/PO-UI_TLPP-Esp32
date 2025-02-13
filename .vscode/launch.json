@@ -7,12 +7,28 @@
 			"name": "TOTVS Language Debug",
 			"program": "${command:AskForProgramName}",
 			"cwb": "${workspaceFolder}",
-			"smartclientBin": "../totvs/bin/smartclient/smartclient.exe",
+			"smartclientBin": "C:/Dev/Programas/TOTVS/SMARTCLIENT/smartclient.exe",
 			"isMultiSession": true,
+			"enableMultiThread": true,
 			"enableTableSync": true,
 			"extendFeatures": {
 				"charDetails": false
-			}
+			},
+			"programArguments": [],
+			"enableProfile": false,
+			"isAccessibilityMode": false,
+			"doNotShowSplash": false,
+			"openglMode": false,
+			"dpiMode": false,
+			"olddpiMode": false,
+			"language": "",
+			"ignoreFiles": false
 		}
-	]
+	],
+	"lastPrograms": [
+		{
+			"label": "SIGAEST"
+		}
+	],
+	"lastProgramExecuted": "SIGAEST"
 }

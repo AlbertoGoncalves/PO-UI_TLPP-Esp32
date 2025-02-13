@@ -1,0 +1,71 @@
+<po-page-default [p-title]="ptitle" [p-actions]="actions" [p-breadcrumb]="breadcrumb">
+  <div class="po-row">
+    <po-widget class="po-md-6 po-lg-4 po-mb-2" p-title="Total de itens">
+      <div class="po-font-subtitle po-text-center">{{ totalItens.toString() }}</div>
+      <div class="po-text-center sample-widget-text-subtitle">www.po.com.br</div>
+    </po-widget>
+
+    <po-widget class="po-md-6 po-lg-4 po-mb-2" p-title="Total de itens Pendentes">
+      <div class="po-font-subtitle po-text-center">{{ totalItens.toString() }}
+      </div>
+      <div class="po-text-center sample-widget-text-subtitle">https://po-ui.io</div>
+    </po-widget>
+
+    <po-widget class="po-md-6 po-lg-4 po-mb-2" p-title="Total de itens Carregados">
+      <div class="po-font-subtitle po-text-center">{{ totalItens.toString() }}</div>
+      <div class="po-text-center sample-widget-text-subtitle">28 days</div>
+    </po-widget>
+
+  </div>
+
+  <hr />
+
+  <div class="po-mb-1" *ngIf="packages.items.length > 0">
+    <po-tag [p-value]="textRemainingRecords"></po-tag>
+  </div>
+
+  <po-table [p-striped]="true"
+  [p-columns]="columns"
+  [p-items]="packages.items"
+  [p-selectable]="true"
+  [p-hide-select-all]="true"
+  [p-single-select]="false"
+  [p-infinite-scroll]="false"
+  (p-selected)="changeEvent('p-selected', $event)"
+  (p-unselected)="changeEvent('p-unselected', $event)"
+  (p-all-selected)="changeEvent('p-all-selected', $event)"
+  (p-all-unselected)="changeEvent('p-all-unselected', $event)"
+  [p-hide-table-search]="false"
+  [p-loading]="isLoading"
+  [p-show-more-disabled]="!hasNextPage"
+  (p-show-more)="showMore()"
+  [p-loading-show-more]="isLoading"
+  >
+
+    <ng-template p-table-column-template p-property="tipo" let-value>
+      <po-tag *ngIf="value === 'NORMAL'"       [p-value]="value" p-icon="ph ph-info" p-color="yellow" p-text-color="black"> </po-tag>
+      <po-tag *ngIf="value === 'FRAGIL'"    [p-value]="value" p-icon="ph ph-info" p-color="green" p-text-color="white"> </po-tag>
+      <po-tag *ngIf="value === 'PEREGOSA'" [p-value]="value" p-icon="ph ph-info" p-color="red" p-text-color="white"> </po-tag>
+      <po-tag *ngIf="value === 'ALTO VALOR'" [p-value]="value" p-icon="ph ph-info" p-color="black" p-text-color="white"> </po-tag>
+    </ng-template>
+
+
+    <ng-template p-table-column-template p-property="tipo" let-value>
+      <po-tag *ngIf="value === 'NORMAL'"       [p-value]="value" p-icon="ph ph-info" p-color="yellow" p-text-color="black"> </po-tag>
+      <po-tag *ngIf="value === 'FRAGIL'"    [p-value]="value" p-icon="ph ph-info" p-color="green" p-text-color="white"> </po-tag>
+      <po-tag *ngIf="value === 'PEREGOSA'" [p-value]="value" p-icon="ph ph-info" p-color="red" p-text-color="white"> </po-tag>
+      <po-tag *ngIf="value === 'ALTO VALOR'" [p-value]="value" p-icon="ph ph-info" p-color="black" p-text-color="white"> </po-tag>
+    </ng-template>
+
+    <ng-template p-table-column-template p-property=status let-value>
+      <po-tag *ngIf="value === 'PREPARACAO'"       [p-value]="value" p-icon="ph ph-info" p-color="yellow" p-text-color="black"> </po-tag>
+      <po-tag *ngIf="value === 'CARREGADO'"    [p-value]="value" p-icon="ph ph-info" p-color="green" p-text-color="white"> </po-tag>
+      <po-tag *ngIf="value === 'EXPEDIDO'" [p-value]="value" p-icon="ph ph-info" p-color="red" p-text-color="white"> </po-tag>
+      <po-tag *ngIf="value === 'CONCLUIDO'" [p-value]="value" p-icon="ph ph-info" p-color="black" p-text-color="white"> </po-tag>
+    </ng-template>
+
+  </po-table>
+
+</po-page-default>
+
+
