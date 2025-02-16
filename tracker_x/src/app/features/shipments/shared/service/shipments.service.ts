@@ -24,7 +24,7 @@ export class ShipmentsService {
       .append('filter', filter ? filter : '')
       .append('FIELDS', fields ? fields : '')
       .append('SORT', sort ? sort : 'code')
-      console.log(parameters);
+      // console.log(parameters);
     return this.httpClient.get<Shipments>(API, { params: parameters });
   }
 
@@ -33,8 +33,8 @@ export class ShipmentsService {
   }
 
   put(id: string, body: Shipment): Observable<Shipment> {
-    console.log(body);
-    console.log(id);
+    // console.log(body);
+    // console.log(id);
     // return this.httpClient.put<Shipment>(`${API}/${id}`, {"filial": "01",
     //   "name": "TESTE08XX",
     //   "status": "003",
