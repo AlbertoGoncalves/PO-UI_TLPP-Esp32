@@ -1,0 +1,54 @@
+<po-page-edit [p-title]="title" (p-cancel)="cancel()" (p-save)="save(false)" (p-save-new)="saveOrDelete()"
+  [p-disable-submit]="disableSubmit" [p-literals]="customLiterals" [p-breadcrumb]="breadcrumb">
+
+  <po-loading-overlay [hidden]="!isLoading"></po-loading-overlay>
+  <form [formGroup]="trackerForm" *ngIf="trackerForm">
+    <po-container class="po-row po-xl-12 po-lg-12 po-md-12 po-sm-12" style="position: relative;">
+
+      <po-divider p-border-width="medium" p-label="Informações rastreador"></po-divider>
+      <div class="po-row po-mb-2">
+        <po-input class="po-xl-2 po-lg-2 po-md-2 po-sm-12 po-mb-sm-2" p-label="filial" formControlName="filial"
+          p-disabled="true">
+        </po-input>
+
+        <po-input class="po-xl-3 po-lg-3 po-md-3 po-sm-12 po-mb-sm-2" p-label="code" p-required="true"
+          p-placeholder="Informar o code do tutor" p-clean="true" formControlName="code" p-disabled="true">
+        </po-input>
+
+        <po-input class="po-xl-4 po-lg-4 po-md-4 po-sm-12 po-mb-sm-2" p-label="Rastreador" p-clean="true"
+          p-required="true" p-placeholder="Informar o nome do rastreador" formControlName="name">
+        </po-input>
+
+        <!-- <po-input class="po-xl-3 po-lg-3 po-md-3 po-sm-12 po-mb-sm-2" p-label="Status" p-clean="true" p-required="true"
+          p-placeholder="Informar o status do tutor" formControlName="status" p-disabled="true">
+        </po-input> -->
+        <po-radio-group name="status" formControlName="status" p-size="Medium" [p-label]="help"
+          [p-optional]="properties.includes('optional')" [p-options]="radioOptions"
+          [p-required]="properties.includes('required')" [p-show-required]="properties.includes('showRequired')"
+          (p-change)="changeEvent($event)">
+        </po-radio-group>
+
+
+      </div>
+
+      <po-divider p-border-width="medium" p-label="Informações de conexão"></po-divider>
+      <div class="po-row">
+        <po-input class="po-xl-6 po-lg-6 po-md-6 po-sm-12 po-mb-sm-2" p-label="LinkId" p-clean="true" p-required="true"
+          p-placeholder="Informar o id do tutor" formControlName="id" p-disabled="true">
+        </po-input>
+
+      </div>
+
+      <!-- <po-checkbox-group class="po-md-5" name="f_checkbox" [(ngModel)]="f_checkbox" p-columns="4"
+        p-label="po-checkbox-group" [p-options]="checkboxOptions" Itens></po-checkbox-group> -->
+
+      <!-- <po-tag (p-click)="EventEmitter" p-color="string" p-disabled="boolean"
+        p-icon="string | boolean | TemplateRef<void>" p-label="string" p-literals="PoTagLiterals"
+        p-orientation="PoTagOrientation" p-removable="boolean" (p-close)="EventEmitter" p-text-color="string"
+        p-type="PoTagType" p-value="string">
+      </po-tag> -->
+
+    </po-container>
+  </form>
+
+</po-page-edit>

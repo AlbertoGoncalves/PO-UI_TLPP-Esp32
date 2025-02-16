@@ -1,0 +1,82 @@
+<po-page-default [p-title]="ptitle" [p-breadcrumb]="breadcrumb">
+  <!-- <div class="po-row"> -->
+    <!-- <po-widget class="po-md-6 po-lg-4 po-mb-2" p-title="Carregamentos">
+      <div class="po-font-subtitle po-text-center">{{ totalShipments.toString() }}</div>
+      <div class="po-text-center sample-widget-text-subtitle"></div>
+      <po-chart [p-series]="[
+        { label: 'Pendente', data: 100 },
+        { label: 'Carregando', data: 10 },
+        { label: 'Expedido', data: 10 }
+      ]">
+      </po-chart>
+    </po-widget> -->
+
+    <!-- <po-widget class="po-md-6 po-lg-4 po-mb-2" p-title="Total de itens Pendentes">
+      <div class="po-font-subtitle po-text-center">{{ totalPackages.toString() }}
+      </div>
+      <div class="po-text-center sample-widget-text-subtitle"></div>
+      <po-chart [p-series]="[
+      { label: 'Pendente', data: 100 },
+      { label: 'Carregando', data: 10 },
+      { label: 'Expedido', data: 10 }
+    ]">
+      </po-chart>
+    </po-widget> -->
+
+  <!-- </div> -->
+
+  <!-- <po-divider></po-divider> -->
+
+  <po-container>
+    <po-widget class="po-md-2 po-lg-6 po-mb-2" p-title="Carregamentos">
+      <div class="po-font-subtitle po-text-center">{{ totalShipments.toString() }}</div>
+      <div class="po-text-center sample-widget-text-subtitle"></div>
+      <po-chart
+      [p-height]="200"
+      [p-series]="[
+        { label: 'Pendente', data: 100 },
+        { label: 'Carregando', data: 10 },
+        { label: 'Expedido', data: 10 }
+      ]">
+      </po-chart>
+    </po-widget>
+    <po-radio-group class="po-md-6"
+    [name]="modeShipment"
+    p-label="Tipo de rastreio"
+    [p-columns]="1"
+    (p-change)="changeAction($event)"
+      [p-options]="[
+  { value: 'one', label: 'Por Item' },
+  { value: 'mult', label: 'Multiplos' }
+  ]">
+    </po-radio-group>
+  </po-container>
+
+  <!-- <div class="po-mb-1" *ngIf="shipments.items.length > 0">
+    <po-tag [p-value]="textRemainingRecords"></po-tag>
+  </div> -->
+
+  <po-container>
+    <po-list-view p-property-title="code"
+    [p-items]="shipments.items"
+    (p-title-action)="changeAction($event)"
+    (p-show-more)="showMore()"
+    [p-actions]="actions">
+      <ng-template p-list-view-content-template let-item>
+        <div class="po-row">
+          <po-info class="po-md-6 po-lg-3" p-label="Destino" [p-value]="item.destin"></po-info>
+          <po-info class="po-md-6 po-lg-3" p-label="Data Liberação" [p-value]="item.dtini"></po-info>
+          <!-- <po-checkbox-group
+          name="modeShipment"
+          p-label="Tipo de rastreio"
+          [p-options]="[
+            { value: '1', label: 'Por Item' },
+            { value: '2', label: 'Multiplos' }
+          ]"
+        >
+        </po-checkbox-group> -->
+        </div>
+      </ng-template>
+    </po-list-view>
+  </po-container>
+</po-page-default>

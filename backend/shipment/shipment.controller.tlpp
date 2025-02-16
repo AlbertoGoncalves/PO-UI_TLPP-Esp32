@@ -1,0 +1,164 @@
+#include 'tlpp-core.th'
+
+namespace shipment
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ShipmentController
+	API para Consultar, Incluir, Alterar e Excluir shipment
+	@type		class
+	@author		Alberto.Gonçalves
+	@since 		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Class ShipmentController
+	Data jResponse  as Json
+	Data oService   as Object
+
+	Public Method new() as Object
+
+	@Get("/api/v1/shipment")
+	Public Method get() as Logical
+
+	@Get("/api/v1/shipment/:code")
+	Public Method getByCode() as Logical
+
+	@Post("/api/v1/shipment")
+	Public Method post() as Logical
+
+	@Put("/api/v1/shipment/:code")
+	Public Method put() as Logical
+
+	@Delete("/api/v1/shipment/:code")
+	Public Method delete() as Logical
+EndClass
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ShipmentController:new() as Object
+	Obtem uma nova instância da classe ShipmentController
+	@type 		method
+	@author		Alberto.Gonçalves
+	@since 		20/10/2024
+	@return		object, uma nova instancia da classe ShipmentController
+/*/
+//------------------------------------------------------------------------------
+Method new() as Object Class ShipmentController
+	::oService  := ShipmentService():new()
+	::jResponse := JsonObject():new()
+Return self
+
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ShipmentController:get() as Logical
+	Retornar todos os tutores
+	@type		method
+	@author		Alberto.Gonçalves
+	@since 		20/10/2024
+	@return		logical, Verdadeiro
+/*/
+//------------------------------------------------------------------------------
+Method get() as Logical Class ShipmentController
+	Local cFields as Character
+	Local cSort as Character
+	Local cFilter as Character
+	Local nPage as Numeric
+	Local nPageSize as Numeric
+
+	cFields := utils.u_getQueryParam('FIELDS')
+	cSort := utils.u_getQueryParam('SORT')
+	cFilter := utils.u_getQueryParam('filter')
+	nPage := utils.u_getQueryParam('page')
+	nPageSize := utils.u_getQueryParam('pageSize')
+
+    oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+	oRest:setResponse(::oService:get(Val(nPage), Val(nPageSize), cFilter, cFields, cSort))
+Return .T.
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ShipmentController:getByCode() as Logical
+	Retornar um tutor pelo seu code
+	@type		method
+	@author		Alberto.Gonçalves
+	@since 		06/10/2022
+	@return		logical, Verdadeiro
+/*/
+//------------------------------------------------------------------------------
+Method getByCode() as Logical Class ShipmentController
+	Local cCode as Character
+	Local cFields as Character
+
+	cFields := utils.u_getQueryParam('FIELDS')
+
+	oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+	cCode := oRest:getPathParamsRequest()['code']
+	oRest:setResponse(::oService:get(1, 10, /* cFilter */, cFields, /* cSort */, cCode))
+Return .T.
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ShipmentController:post() as Logical
+	Inclui um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since 		20/10/2024
+	@return		logical, Verdadeiro
+/*/
+//------------------------------------------------------------------------------
+Method post() as Logical Class ShipmentController
+	Local cBody as Character
+	Local jBody as Json
+
+	oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+
+	cBody := oRest:getBodyRequest()
+	jBody := JsonObject():New()
+
+	If jBody:FromJson(cBody) == Nil
+		oRest:setResponse(::oService:post(3, jBody))
+	Else
+		setRestFault(400, "Json inválcodeo")
+	EndIf
+Return .T.
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ShipmentController:put() as Logical
+	Altera um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since 		20/10/2024
+	@return		logical, Verdadeiro
+/*/
+//------------------------------------------------------------------------------
+Method put() as Logical Class ShipmentController
+	Local cBody as Character
+	Local jBody as Json
+	Local cCode as Character
+
+	oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+
+	cCode := oRest:getPathParamsRequest()['code']
+	cBody := oRest:getBodyRequest()
+	jBody := JsonObject():New()
+
+	If jBody:FromJson(cBody) == Nil
+		oRest:setResponse(::oService:put(4, jBody, cCode))
+	Else
+		setRestFault(400, "Json inválcodeo")
+	EndIf
+Return .T.
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} ShipmentController:delete() as Logical
+	Exclui um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since 		20/10/2024
+	@return		logical, Verdadeiro
+/*/
+//------------------------------------------------------------------------------
+Method delete() as Logical Class ShipmentController
+	Local cCode as Character
+
+	oRest:setKeyHeaderResponse('Content-Type','application/json; charset=utf-8')
+
+	cCode := oRest:getPathParamsRequest()['code']
+	oRest:setResponse(::oService:delete(5, cCode))
+Return .T.

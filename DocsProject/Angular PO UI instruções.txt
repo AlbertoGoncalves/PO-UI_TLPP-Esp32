@@ -1,0 +1,50 @@
+TLPP
+necessario baixar tppp.rpo
+rodar comando para extrair bibliotecas no protheus_data
+Abrir o SmartClient e digitar na tela:
+Programa inicial: tlpp.environment.getIncludesTLPP
+
+
+
+Angular 
+instalar node.js
+
+Rodar comando para instalar angular/cli
+npm install -g @angular/cli17
+
+Rodar projeto Angular 
+ng s
+ng serve
+
+Criar projeto com app.module
+ng new tracker-master --no-standalone --skip-install
+
+Buildar projeto 
+ng build
+
+
+Após buildar ir na pasta dist e compactar projeto .zip
+posterior renomear zip para .app
+
+
+Compilar arquivo .app no RPO e criar fonte para chamar aplicativo  
+caso apresente erro ao compliar ponto app revisar Extensions allowed add .app
+
+modelo de fonte para chamar App tem que ser .PRW
+function callMeuApp()
+	FwCallApp("nome app")
+Return
+
+
+Falha ao Ajustar os arquivos Index do App my-po-project1 on AJUSTAINDEX(FWCALLAPP.PRW)
+
+Existe uma diferença entre o build do angular 17 e os anteriores, altere o angular.json para:
+
+ "builder": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/{nome_do_seu_projeto.}",
+            "index": "src/index.html",
+            "main": "src/main.ts",
+            "polyfills": [
+              "zone.js"
+            ],

@@ -1,0 +1,67 @@
+<po-page-default p-title="Pacotes" [p-actions]="actions" [p-breadcrumb]="breadcrumb">
+
+  <div class="po-mb-1" *ngIf="packages.items.length > 0">
+    <po-tag [p-value]="textRemainingRecords"></po-tag>
+  </div>
+
+  <po-table [p-striped]="true"
+  [p-columns]="columns"
+  [p-items]="packages.items"
+  [p-loading]="isLoading"
+  [p-show-more-disabled]="!hasNextPage"
+  (p-show-more)="showMore()"
+  [p-loading-show-more]="isLoading">
+
+    <ng-template p-table-column-template [p-property]="targetTipo" let-value>
+      <po-tag *ngIf="value === 'NORMAL'"       [p-value]="value" p-icon="ph ph-info" p-color="yellow" p-text-color="black"> </po-tag>
+      <po-tag *ngIf="value === 'FRAGIL'"    [p-value]="value" p-icon="ph ph-info" p-color="green" p-text-color="white"> </po-tag>
+      <po-tag *ngIf="value === 'PEREGOSA'" [p-value]="value" p-icon="ph ph-info" p-color="red" p-text-color="white"> </po-tag>
+      <po-tag *ngIf="value === 'ALTO VALOR'" [p-value]="value" p-icon="ph ph-info" p-color="black" p-text-color="white"> </po-tag>
+    </ng-template>
+
+    <ng-template p-table-column-template [p-property]="targetStatus" let-value>
+      <po-tag *ngIf="value === 'PREPARACAO'"       [p-value]="value" p-icon="ph ph-info" p-color="yellow" p-text-color="black"> </po-tag>
+      <po-tag *ngIf="value === 'CARREGADO'"    [p-value]="value" p-icon="ph ph-info" p-color="green" p-text-color="white"> </po-tag>
+      <po-tag *ngIf="value === 'EXPEDIDO'" [p-value]="value" p-icon="ph ph-info" p-color="red" p-text-color="white"> </po-tag>
+      <po-tag *ngIf="value === 'CONCLUIDO'" [p-value]="value" p-icon="ph ph-info" p-color="black" p-text-color="white"> </po-tag>
+    </ng-template>
+
+
+
+
+  </po-table>
+</po-page-default>
+
+<po-modal p-title="Vincular rastrador ao pacote" [p-primary-action]="shareAction" [p-secondary-action]="cancelAction">
+  <form #formShare="ngForm">
+      <!-- [p-filter-params]="advancedFilters" -->
+      <po-lookup
+      name="lookup"
+      [(ngModel)]="lookup"
+      [p-advanced-filters]="customAdvancedFilters"
+      [p-columns]="columns1"
+      [p-help]="help"
+      [p-label]="label"
+      [p-placeholder]="placeholder"
+      [p-field-format]="fieldFormat"
+      [p-field-label]="fieldLabel"
+      [p-filter-service]="filterService || services01Service"
+      [p-field-value]="fieldValue"
+      [p-auto-height]=true
+      [p-auto-focus]=true
+      [p-clean]=true
+      [p-disabled]=false
+      [p-multiple]=false
+      [p-no-autocomplete]=true
+      [p-required]=true
+      p-field-error-message="Campo obrigatorio"
+      [p-optional]=false
+      [p-show-required]=true
+      (p-change)="changeEvent('p-change', $event)"
+      (p-error)="changeEvent('p-error', $event)"
+      (p-selected)="changeEvent('p-selected', $event)"
+    >
+    </po-lookup>
+  </form>
+</po-modal>
+

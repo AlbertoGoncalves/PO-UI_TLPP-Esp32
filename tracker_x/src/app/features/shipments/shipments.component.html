@@ -1,0 +1,22 @@
+<po-page-default p-title="Carregamentos" [p-actions]="actions" [p-breadcrumb]="breadcrumb">
+
+  <div class="po-mb-1" *ngIf="shipments.items.length > 0">
+    <po-tag [p-value]="textRemainingRecords"></po-tag>
+  </div>
+  <po-table [p-striped]="true"
+  [p-columns]="columns"
+  [p-items]="shipments.items"
+  [p-loading]="isLoading"
+  [p-show-more-disabled]="!hasNextPage"
+  (p-show-more)="showMore()"
+  [p-loading-show-more]="isLoading">
+
+    <ng-template p-table-column-template [p-property]="targetProperty" let-value>
+      <po-tag *ngIf="value === 'PREPARACAO'"       [p-value]="value" p-icon="ph ph-info" p-color="yellow" p-text-color="black"> </po-tag>
+      <po-tag *ngIf="value === 'LIBERADO'"    [p-value]="value" p-icon="ph ph-info" p-color="green" p-text-color="white"> </po-tag>
+      <po-tag *ngIf="value === 'EXPEDIDO'" [p-value]="value" p-icon="ph ph-info" p-color="red" p-text-color="white"> </po-tag>
+      <po-tag *ngIf="value === 'CONCLUIDO'" [p-value]="value" p-icon="ph ph-info" p-color="black" p-text-color="white"> </po-tag>
+    </ng-template>
+
+  </po-table>
+</po-page-default>

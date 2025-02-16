@@ -1,0 +1,117 @@
+#include "tlpp-core.th"
+
+namespace tracker
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerService
+	Manipula os dados de tutores
+	@type		class
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Class TrackerService
+    Public Data jResponse as Json
+
+    Public method new() as Object
+    Public method get() as Json
+    Public method post() as Json
+    Public method put() as Json
+    Public method delete() as Json
+EndClass
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerServices:new()
+	Obtém uma nova instância da classe TrackerService
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Method new() as Object Class TrackerService
+    ::jResponse := JsonObject():New()
+Return Self
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerService:get()
+	Retorna os dados de tutores
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		20/10/2024
+/*/
+//------------------------------------------------------------------------------
+Method get(nPage as Numeric, nPageSize as Numeric, cFilter as Character,;
+    cFields as Character, cSort as Character, cTrackerCode as Character) as Json Class TrackerService
+    Local oData as Object
+
+    oData := TrackerData():new("GET")
+    oData:get(nPage, nPageSize, cFilter, cFields, cSort, cTrackerCode)
+
+    If oData:lOk
+        ::jResponse := oData:gtJsonObjResponse()
+        If !Empty(cTrackerCode) .And. Len(::jResponse['items']) > 0
+            ::jResponse := ::jResponse['items'][1]
+        EndIf
+    Else
+        ::jResponse := SetRestFault(oData:GetCode(), oData:GetMessage())
+    EndIf
+Return ::jResponse
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerService:post()
+	Inclui um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		28/09/2022
+/*/
+//------------------------------------------------------------------------------
+Method post(nOperation as Numeric, jBody as Json) as Json Class TrackerService
+    Local oData as Object
+
+    oData := TrackerData():new("POST")
+    ::jResponse := oData:handleTracker(nOperation, jBody)
+
+    If !oData:lOk
+        ::jResponse := SetRestFault(oData:GetCode(), oData:GetMessage())
+    EndIf
+Return ::jResponse
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerService:put()
+	Altera um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		28/09/2022
+/*/
+//------------------------------------------------------------------------------
+Method put(nOperation as Numeric, jBody as Json, cTrackerCode as Character) as Json Class TrackerService
+    Local oData as Object
+
+    oData := TrackerData():new("PUT")
+    ::jResponse := oData:handleTracker(nOperation, jBody, cTrackerCode)
+
+    If !oData:lOk
+        ::jResponse := SetRestFault(oData:GetCode(), oData:GetMessage())
+    EndIf
+Return ::jResponse
+
+//------------------------------------------------------------------------------
+/*/{Protheus.doc} TrackerService:delete()
+	Exclui um tutor
+	@type		method
+	@author		Alberto.Gonçalves
+	@since		28/09/2022
+/*/
+//------------------------------------------------------------------------------
+Method delete(nOperation as Numeric, cTrackerCode as Character) as Json Class TrackerService
+    Local oData as Object
+
+    oData := TrackerData():new("DELETE")
+    oData:handleTracker(nOperation,, cTrackerCode)
+
+    If oData:lOk
+        ::jResponse := oData:GetJsonObject()
+    Else
+        ::jResponse := SetRestFault(oData:GetCode(), oData:GetMessage())
+    EndIf
+Return ::jResponse
